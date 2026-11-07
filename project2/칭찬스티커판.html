@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 반 칭찬 스티커판</title>
+    <style>
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            background-color: #fff9e6;
+            text-align: center;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #ff7f50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 5px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .btn-reset {
+            background-color: #f44336;
+        }
+        .btn-reset:hover {
+            background-color: #da190b;
+        }
+        
+        .board-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .group-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            width: 260px;
+            border: 3px solid #ffe4b5;
+        }
+        .group-name input {
+            font-size: 22px;
+            font-weight: bold;
+            width: 80%;
+            text-align: center;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 5px;
+            color: #333;
+            background-color: transparent;
+        }
+        .group-name input:focus {
+            outline: none;
+            border-color: #ff7f50;
+            background-color: #fff;
+        }
+        .sticker-area {
+            min-height: 80px;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: center;
+            gap: 5px;
+        }
+        .sticker {
+            font-size: 28px;
+            animation: pop 0.3s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .sticker-count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff7f50;
+            margin-bottom: 15px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn-add {
+            background-color: #2196F3;
+            font-size: 20px;
+            padding: 8px 15px;
+        }
+        .btn-add:hover { background-color: #0b7dda; }
+        .btn-remove {
+            background-color: #9e9e9e;
+            font-size: 20px;
+            padding: 8px 15px;
+        }
+        .btn-remove:hover { background-color: #757575; }
+        .delete-group {
+            font-size: 13px;
+            color: #aaa;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        .delete-group:hover {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌟 우리 반 칭찬 스티커판 🌟</h1>
+    
+    <div class="controls">
+        <button onclick="addGroup()">+ 모둠 추가</button>
+        <button onclick="resetAll()" class="btn-reset">🔄 전체 스티커 초기화</button>
+    </div>
+
+    <div class="board-container" id="board">
+        <!-- 자바스크립트를 통해 여기에 모둠 카드가 생성됩니다 -->
+    </div>
+
+    <script>
+        // 로컬 스토리지에서 데이터 불러오기, 없으면 기본 4개 모둠 세팅
+        let groups = JSON.parse(localStorage.getItem('stickerBoardData')) || [
+            { id: 1, name: '1모둠', count: 0 },
+            { id: 2, name: '2모둠', count: 0 },
+            { id: 3, name: '3모둠', count: 0 },
+            { id: 4, name: '4모둠', count: 0 }
+        ];
+
+        // 데이터 저장 함수
+        function saveData() {
+            localStorage.setItem('stickerBoardData', JSON.stringify(groups));
+        }
+
+        // 화면 렌더링 함수
+        function render() {
+            const board = document.getElementById('board');
+            board.innerHTML = ''; // 기존 내용 지우기
+
+            groups.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                
+                // 스티커(⭐️) HTML 생성
+                let stickersHTML = '';
+                for(let i = 0; i < group.count; i++) {
+                    stickersHTML += '<span class="sticker">⭐️</span>';
+                }
+
+                card.innerHTML = `
+                    <div class="group-name">
+                        <input type="text" value="${group.name}" onchange="updateName(${group.id}, this.value)" title="클릭하여 모둠 이름을 수정하세요">
+                    </div>
+                    <div class="sticker-area">${stickersHTML}</div>
+                    <div class="sticker-count">총 ${group.count}개</div>
+                    <div class="btn-group">
+                        <button class="btn-remove" onclick="updateCount(${group.id}, -1)">-1</button>
+                        <button class="btn-add" onclick="updateCount(${group.id}, 1)">+1</button>
+                    </div>
+                    <span class="delete-group" onclick="deleteGroup(${group.id})">모둠 삭제</span>
+                `;
+                board.appendChild(card);
+            });
+        }
+
+        // 스티커 개수 증감
+        function updateCount(id, change) {
+            const group = groups.find(g => g.id === id);
+            if (group) {
+                group.count += change;
+                if (group.count < 0) group.count = 0; // 스티커가 0개 미만으로 내려가지 않게 방지
+                saveData();
+                render();
+            }
+        }
+
+        // 모둠 이름 수정
+        function updateName(id, newName) {
+            const group = groups.find(g => g.id === id);
+            if (group) {
+                group.name = newName;
+                saveData();
+            }
+        }
+
+        // 새 모둠 추가
+        function addGroup() {
+            const newId = groups.length > 0 ? Math.max(...groups.map(g => g.id)) + 1 : 1;
+            groups.push({ id: newId, name: newId + '모둠', count: 0 });
+            saveData();
+            render();
+        }
+
+        // 모둠 삭제
+        function deleteGroup(id) {
+            if (confirm('이 모둠을 정말 삭제하시겠습니까?')) {
+                groups = groups.filter(g => g.id !== id);
+                saveData();
+                render();
+            }
+        }
+
+        // 전체 스티커 초기화
+        function resetAll() {
+            if (confirm('모든 모둠의 스티커를 0개로 초기화하시겠습니까? (이름은 유지됩니다)')) {
+                groups.forEach(g => g.count = 0);
+                saveData();
+                render();
+            }
+        }
+
+        // 초기 화면 그리기
+        render();
+    </script>
+</body>
+</html>

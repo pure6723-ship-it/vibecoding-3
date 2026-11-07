@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 모둠 편성기</title>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #1a73e8;
+        }
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .controls label {
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 25px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .group-card {
+            background-color: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .group-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a73e8;
+            color: #202124;
+            display: flex;
+            justify-content: space-between;
+        }
+        .member-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .member-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #e1e4e8;
+            color: #444;
+        }
+        .member-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>👥 랜덤 모둠 편성기</h2>
+        <p class="description">전체 인원의 이름을 입력하고 원하는 모둠 수를 정하면 무작위로 고르게 배정됩니다.</p>
+        
+        <textarea id="namesInput" placeholder="이름을 입력하세요. (쉼표나 줄바꿈, 띄어쓰기로 구분)&#10;예: 김철수, 이영희, 박지민, 최동훈"></textarea>
+        
+        <div class="controls">
+            <label for="groupCount">모둠 수:</label>
+            <input type="number" id="groupCount" min="1" value="4">
+            <button onclick="generateGroups()">편성하기</button>
+        </div>
+
+        <div id="resultArea" class="result-grid"></div>
+    </div>
+
+    <script>
+        // 배열을 무작위로 섞는 함수 (Fisher-Yates Shuffle)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateGroups() {
+            const input = document.getElementById('namesInput').value;
+            const groupCount = parseInt(document.getElementById('groupCount').value, 10);
+            const resultArea = document.getElementById('resultArea');
+
+            // 기존 결과 초기화
+            resultArea.innerHTML = '';
+
+            // 방어 로직: 모둠 수 검증
+            if (isNaN(groupCount) || groupCount < 1) {
+                alert("유효한 모둠 수를 입력해주세요.");
+                return;
+            }
+
+            // 정규식을 사용해 쉼표, 줄바꿈, 띄어쓰기로 이름 분리 후 공백 제거
+            let names = input.split(/[\n,\s]+/).map(name => name.trim()).filter(name => name !== '');
+
+            if (names.length === 0) {
+                alert("참가자 명단을 입력해주세요.");
+                return;
+            }
+
+            if (names.length < groupCount) {
+                alert("모둠 수가 참가자 수보다 많습니다. 모둠 수를 줄여주세요.");
+                return;
+            }
+
+            // 참가자 무작위 섞기
+            names = shuffle(names);
+
+            // 모둠 수만큼 빈 배열 생성
+            const groups = Array.from({ length: groupCount }, () => []);
+
+            // 참가자들을 각 모둠에 순서대로(라운드 로빈 방식) 1명씩 배정하여 고르게 분배
+            names.forEach((name, index) => {
+                groups[index % groupCount].push(name);
+            });
+
+            // 생성된 모둠을 화면에 출력
+            groups.forEach((group, index) => {
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                
+                const title = document.createElement('div');
+                title.className = 'group-title';
+                title.innerHTML = `<span>${index + 1}모둠</span> <span style="font-size: 14px; color: #666; font-weight: normal;">${group.length}명</span>`;
+                card.appendChild(title);
+
+                const list = document.createElement('ul');
+                list.className = 'member-list';
+                
+                group.forEach(member => {
+                    const li = document.createElement('li');
+                    li.textContent = member;
+                    list.appendChild(li);
+                });
+                
+                card.appendChild(list);
+                resultArea.appendChild(card);
+            });
+        }
+    </script>
+
+</body>
+</html>

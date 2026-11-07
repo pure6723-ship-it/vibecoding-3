@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝터 타이머 및 순서표</title>
+    <style>
+        /* 기본 설정 및 프로젝터용 고대비 다크모드 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 좌우 레이아웃 분할 */
+        .timer-container {
+            flex: 6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 2px solid #222;
+            position: relative;
+        }
+
+        .sequence-container {
+            flex: 4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4vw;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 타이머 숫자 스타일 (프로젝터용 초대형 폰트) */
+        #timer {
+            font-size: 22vw;
+            font-weight: 800;
+            line-height: 1;
+            font-variant-numeric: tabular-nums; /* 숫자 폭 고정으로 덜덜거림 방지 */
+            color: #00ff66;
+            text-shadow: 0 0 30px rgba(0, 255, 102, 0.4);
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        /* 남은 시간이 1분 이하일 때 경고 색상 */
+        #timer.warning {
+            color: #ff3333;
+            text-shadow: 0 0 30px rgba(255, 51, 51, 0.4);
+        }
+
+        /* 순서표 스타일 */
+        h1 {
+            font-size: 3vw;
+            color: #888;
+            margin-top: 0;
+            margin-bottom: 3vh;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            font-size: 2.8vw;
+            color: #444;
+            margin-bottom: 2.5vh;
+            transition: all 0.3s ease;
+        }
+
+        /* 현재 진행 중인 순서 강조 */
+        li.active {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 3.2vw;
+            transform: translateX(10px);
+        }
+
+        li.active::before {
+            content: '▶ ';
+            color: #ffd700; /* 노란색 화살표 */
+        }
+
+        li.done {
+            text-decoration: line-through;
+            color: #333;
+        }
+
+        /* 마우스 오버 시에만 나타나는 조작 버튼 (관객 시선 분산 방지) */
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 영역에 마우스를 올리면 버튼이 보임 */
+        .timer-container:hover .controls, 
+        .sequence-container:hover .controls {
+            opacity: 1;
+        }
+
+        button {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #444;
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 왼쪽: 타이머 영역 -->
+    <div class="timer-container">
+        <div id="timer">15:00</div>
+        
+        <!-- 타이머 조작부 (마우스 올릴 때만 표시) -->
+        <div class="controls">
+            <button onclick="addTime(60)">+1분</button>
+            <button onclick="addTime(-60)">-1분</button>
+            <button onclick="startTimer()">시작</button>
+            <button onclick="pauseTimer()">일시정지</button>
+            <button onclick="resetTimer()">초기화</button>
+        </div>
+    </div>
+
+    <!-- 오른쪽: 순서표 영역 -->
+    <div class="sequence-container">
+        <h1>진행 순서</h1>
+        <ul id="sequence-list">
+            <!-- 이곳에서 순서 내용을 수정하세요 -->
+            <li class="active">1. 개회 및 인사말</li>
+            <li>2. 기조 연설 (1부)</li>
+            <li>3. 중간 휴식 및 다과</li>
+            <li>4. 패널 토의 (2부)</li>
+            <li>5. 질의응답 (Q&A)</li>
+            <li>6. 폐회 및 경품 추첨</li>
+        </ul>
+
+        <!-- 순서 조작부 (마우스 올릴 때만 표시) -->
+        <div class="controls">
+            <button onclick="prevItem()">이전 순서</button>
+            <button onclick="nextItem()">다음 순서</button>
+        </div>
+    </div>
+
+    <script>
+        // ================= 타이머 로직 =================
+        let defaultTime = 15 * 60; // 기본 세팅 시간 (초 단위, 현재 15분)
+        let time = defaultTime;
+        let timerId = null;
+        let isRunning = false;
+        const timerEl = document.getElementById('timer');
+
+        function updateTimerDisplay() {
+            let m = Math.floor(time / 60);
+            let s = time % 60;
+            timerEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            // 1분(60초) 이하로 남으면 빨간색으로 변경
+            if (time <= 60 && time > 0) {
+                timerEl.classList.add('warning');
+            } else {
+                timerEl.classList.remove('warning');
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning && time > 0) {
+                timerId = setInterval(() => {
+                    time--;
+                    updateTimerDisplay();
+                    if (time <= 0) {
+                        pauseTimer();
+                    }
+                }, 1000);
+                isRunning = true;
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            time = defaultTime;
+            updateTimerDisplay();
+        }
+
+        function addTime(seconds) {
+            time += seconds;
+            if (time < 0) time = 0;
+            updateTimerDisplay();
+        }
+
+        // ================= 순서표 로직 =================
+        let currentIdx = 0;
+        const items = document.querySelectorAll('#sequence-list li');
+
+        function updateSequence() {
+            items.forEach((el, idx) => {
+                el.classList.remove('active', 'done');
+                if (idx === currentIdx) {
+                    el.classList.add('active'); // 현재 순서 강조
+                } else if (idx < currentIdx) {
+                    el.classList.add('done'); // 지나간 순서 취소선 처리
+                }
+            });
+        }
+
+        function nextItem() {
+            if (currentIdx < items.length - 1) {
+                currentIdx++;
+                updateSequence();
+            }
+        }
+
+        function prevItem() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                updateSequence();
+            }
+        }
+
+        // 초기 화면 업데이트
+        updateTimerDisplay();
+        updateSequence();
+    </script>
+
+</body>
+</html>
