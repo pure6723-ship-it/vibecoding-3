@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초등 5학년 영어 학습지</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 커스텀 스크롤바 등 부가적인 스타일 */
+        .modal-enter { opacity: 0; transform: scale(0.9); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-blue-50 py-10 px-4 sm:px-6 lg:px-8 font-sans text-gray-800">
+
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg border-t-8 border-blue-400">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">영어 학습지 📝</h1>
+        <p class="text-center text-gray-500 mb-8 font-medium">5학년 영어: What's your favorite subject?</p>
+
+        <form id="worksheetForm" onsubmit="return false;">
+            
+            <!-- [객관식] 1~5번 -->
+            <div class="mb-10">
+                <h2 class="text-xl font-bold border-b-2 border-gray-200 pb-2 mb-4 text-gray-700">Part 1. 객관식 (1~5번)</h2>
+                
+                <!-- Q1 -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-3">1. 다음 중 '수학'을 뜻하는 영어 단어는 무엇인가요?</p>
+                    <div class="space-y-2">
+                        <label class="block"><input type="radio" name="q1" value="1" class="mr-2">Korean</label>
+                        <label class="block"><input type="radio" name="q1" value="2" class="mr-2">math</label>
+                        <label class="block"><input type="radio" name="q1" value="3" class="mr-2">art</label>
+                        <label class="block"><input type="radio" name="q1" value="4" class="mr-2">music</label>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-3">2. 빈칸에 들어갈 알맞은 단어는? "My favorite ________ is science."</p>
+                    <div class="space-y-2">
+                        <label class="block"><input type="radio" name="q2" value="1" class="mr-2">book</label>
+                        <label class="block"><input type="radio" name="q2" value="2" class="mr-2">subject</label>
+                        <label class="block"><input type="radio" name="q2" value="3" class="mr-2">color</label>
+                        <label class="block"><input type="radio" name="q2" value="4" class="mr-2">food</label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-3">3. 다음 그림(또는 설명)에 해당하는 과목은 무엇일까요? <br><span class="text-sm text-gray-500">[설명: 붓과 물감으로 그림을 그리는 과목]</span></p>
+                    <div class="space-y-2">
+                        <label class="block"><input type="radio" name="q3" value="1" class="mr-2">English</label>
+                        <label class="block"><input type="radio" name="q3" value="2" class="mr-2">P.E.</label>
+                        <label class="block"><input type="radio" name="q3" value="3" class="mr-2">art</label>
+                        <label class="block"><input type="radio" name="q3" value="4" class="mr-2">social studies</label>
+                    </div>
+                </div>
+
+                <!-- Q4 (복수 정답) -->
+                <div class="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="font-semibold mb-3">4. 우리말과 영어 단어가 바르게 짝지어진 것을 <span class="text-red-500 underline">모두</span> 고르세요. (정답 2개)</p>
+                    <div class="space-y-2">
+                        <label class="block"><input type="checkbox" name="q4" value="1" class="mr-2">국어 - Korean</label>
+                        <label class="block"><input type="checkbox" name="q4" value="2" class="mr-2">과학 - music</label>
+                        <label class="block"><input type="checkbox" name="q4" value="3" class="mr-2">체육 - P.E.</label>
+                        <label class="block"><input type="checkbox" name="q4" value="4" class="mr-2">영어 - social studies</label>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <p class="font-semibold mb-3">5. 대화의 빈칸에 알맞은 응답을 고르세요.<br><br>A: What's your favorite subject?<br>B: _______________________.</p>
+                    <div class="space-y-2">
+                        <label class="block"><input type="radio" name="q5" value="1" class="mr-2">I have two brothers.</label>
+                        <label class="block"><input type="radio" name="q5" value="2" class="mr-2">My favorite subject is English.</label>
+                        <label class="block"><input type="radio" name="q5" value="3" class="mr-2">It's on the desk.</label>
+                        <label class="block"><input type="radio" name="q5" value="4" class="mr-2">Yes, I do.</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [주관식] 단답형 6~8번 -->
+            <div class="mb-10">
+                <h2 class="text-xl font-bold border-b-2 border-gray-200 pb-2 mb-4 text-gray-700">Part 2. 주관식 - 단답형 (6~8번)</h2>
+                
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <label class="block font-semibold mb-2" for="q6">6. '음악'을 뜻하는 영어 단어를 쓰세요.</label>
+                    <input type="text" id="q6" class="w-full sm:w-1/2 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 outline-none">
+                </div>
+
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <label class="block font-semibold mb-2" for="q7">7. '사회'를 뜻하는 영어 단어를 쓰세요.</label>
+                    <input type="text" id="q7" class="w-full sm:w-1/2 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 outline-none">
+                </div>
+
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <label class="block font-semibold mb-2" for="q8">8. 빈칸에 들어갈 알맞은 단어를 쓰세요. (한 단어, 줄임말 가능)<br><br>A: ________ your favorite subject?</label>
+                    <input type="text" id="q8" class="w-full sm:w-1/2 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 outline-none">
+                </div>
+            </div>
+
+            <!-- [주관식] 서술형 9~10번 -->
+            <div class="mb-10">
+                <h2 class="text-xl font-bold border-b-2 border-gray-200 pb-2 mb-4 text-gray-700">Part 3. 주관식 - 문장으로 쓰기 (9~10번)</h2>
+                
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <label class="block font-semibold mb-2" for="q9">9. "내가 가장 좋아하는 과목은 과학입니다."를 완전한 영어 문장으로 쓰세요.</label>
+                    <textarea id="q9" rows="2" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 outline-none"></textarea>
+                </div>
+
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <label class="block font-semibold mb-2" for="q10">10. 자신이 가장 좋아하는 과목을 묻고 답하는 대화를 영어 문장으로 자유롭게 작성해보세요.<br><span class="text-sm text-gray-500">(예: A: 네가 가장 좋아하는 과목은 뭐니? B: 내가 가장 좋아하는 과목은 ~야.)</span></label>
+                    <textarea id="q10" rows="3" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400 outline-none"></textarea>
+                </div>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="text-center">
+                <button type="button" onclick="gradeWorksheet()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full shadow-lg transition duration-200 text-lg">
+                    제출하고 채점하기 💯
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 결과 모달(Modal) 창 -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center modal-enter" id="modalContent">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">채점 결과</h2>
+            <div id="scoreDisplay" class="text-5xl font-extrabold text-blue-500 my-4">100점</div>
+            <p id="feedbackText" class="text-gray-600 mb-6 font-medium">참 잘했어요!</p>
+            <p class="text-sm text-gray-400 mb-6 text-left" id="detailFeedback"></p>
+            <button onclick="closeModal()" class="bg-blue-100 text-blue-700 font-bold py-2 px-6 rounded-full hover:bg-blue-200 transition">
+                확인
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function cleanText(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]/g, ''); // 공백 및 특수문자 제거 후 소문자 비교
+        }
+
+        function gradeWorksheet() {
+            let score = 0;
+            let wrongQuestions = [];
+            
+            // 객관식 정답 (1~3, 5)
+            const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+            if(q1 === "2") score += 10; else wrongQuestions.push(1);
+
+            const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+            if(q2 === "2") score += 10; else wrongQuestions.push(2);
+
+            const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+            if(q3 === "3") score += 10; else wrongQuestions.push(3);
+
+            // 객관식 4번 (복수 정답: 1번, 3번)
+            const q4Checked = Array.from(document.querySelectorAll('input[name="q4"]:checked')).map(cb => cb.value);
+            if(q4Checked.includes("1") && q4Checked.includes("3") && q4Checked.length === 2) {
+                score += 10;
+            } else {
+                wrongQuestions.push(4);
+            }
+
+            const q5 = document.querySelector('input[name="q5"]:checked')?.value;
+            if(q5 === "2") score += 10; else wrongQuestions.push(5);
+
+            // 주관식 단답형 (6~8)
+            const q6 = cleanText(document.getElementById('q6').value);
+            if(q6 === "music") score += 10; else wrongQuestions.push(6);
+
+            const q7 = cleanText(document.getElementById('q7').value);
+            if(q7 === "socialstudies") score += 10; else wrongQuestions.push(7);
+
+            const q8 = cleanText(document.getElementById('q8').value);
+            if(q8 === "whats" || q8 === "whatis") score += 10; else wrongQuestions.push(8);
+
+            // 주관식 문장형 (9~10)
+            const q9 = cleanText(document.getElementById('q9').value);
+            if(q9 === "myfavoritesubjectisscience") {
+                score += 10;
+            } else {
+                wrongQuestions.push(9);
+            }
+
+            // 10번은 자유 영작이므로 내용이 있으면 일단 정답(10점) 처리
+            const q10 = document.getElementById('q10').value.trim();
+            if(q10.length > 5) {
+                score += 10;
+            } else {
+                wrongQuestions.push(10);
+            }
+
+            // 모달에 정보 업데이트
+            document.getElementById('scoreDisplay').innerText = score + "점";
+            
+            let feedback = "";
+            if (score === 100) feedback = "완벽해요! Excellent! 🎉";
+            else if (score >= 80) feedback = "정말 잘했어요! Good job! 👏";
+            else if (score >= 50) feedback = "조금만 더 노력해봐요! You can do it! 💪";
+            else feedback = "선생님과 함께 다시 복습해볼까요? 🌱";
+
+            document.getElementById('feedbackText').innerText = feedback;
+
+            let detail = "";
+            if(wrongQuestions.length > 0) {
+                detail = "📝 틀린 문항: " + wrongQuestions.join(", ") + "번<br>(10번 문항은 선생님의 개별 확인이 필요할 수 있습니다.)";
+            } else {
+                detail = "모든 문제를 맞혔습니다!";
+            }
+            document.getElementById('detailFeedback').innerHTML = detail;
+
+            // 모달 열기
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.add('modal-enter-active');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.classList.remove('modal-enter-active');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // 애니메이션 시간 대기 후 숨김
+        }
+    </script>
+</body>
+</html>
